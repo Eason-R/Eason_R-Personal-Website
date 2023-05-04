@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="author" content="Yusheng Ren">
+        <title>Introduce Myself</title>
+        <!-- <link rel="stylesheet" href="./css/Intro.css"> -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+        <style>
+            *{
+                cursor: none;
+            }
+
+            .mouse{
+                width: 30px;
+                height: 30px;
+                /* border-radius: 50%; */
+                position: fixed;
+                left: -200px;
+                z-index: 1000;
+                pointer-events: none;
+            }
+
+            body {
+                background: url(../assets/106907798.png);
+                background-repeat: no-repeat;
+                background-size: cover;
+                background-attachment: fixed;
+            }
+
+            .intro-header {
+                height: 200px;
+                width: 90%;
+                margin: 0 auto 0 auto;
+                display: flex;
+                background-image: url(../assets/7430235cbae3f483076475a10b654705.png);
+                background-repeat: no-repeat;
+                background-size: cover;
+                background-position: center 20%;
+            }
+
+            #header-content{
+                position: relative;
+                height: fit-content;
+                width: auto;
+                text-align: center;
+                top: 7.5rem;
+                left: 2rem;
+            }
+
+            .portrait {
+                width: 60px;
+                height: 60px;
+                border-radius: 30px 30px 30px 30px;
+            }
+
+            .info-card {
+                font-family: Lucida Bright Regular;
+                position: relative;
+                top: 4rem;
+                left: 1rem;
+                display: inline-block;
+                margin: 10px;
+                min-width: 230px;
+                max-width: 315px;
+                width: 100%;
+                height: 7rem;
+                text-align: left;
+                background: #fff;
+                border-radius: 5px;
+            }
+
+            .info-card img {
+                max-width: 35%;
+                margin-top: -15px;
+                margin-left: 60%;
+                margin-bottom: 15px;
+                backface-visibility: hidden;
+                vertical-align: top;
+                border-radius: 5px;
+            }
+
+            .info-card figcaption {
+                position: absolute;
+                top: 0;
+                right: 40%;
+                left: 0;
+                bottom: 0;
+                padding: 15px;
+            }
+
+            .info-card h4 {
+                margin: 0;
+                font-weight: normal;
+                color: black;
+            }
+
+            /* .info-card .icons {
+                font-size: 1.6rem;
+            }
+
+            .info-card .icons a {
+                color: #ccc;
+            }
+
+            .info-card .icons a:hover {
+                color: #2980b9;
+            } */
+
+            .container-fluid {
+                width: 90%;
+                margin-top: 10px;
+            }
+
+            .container-fluid .row .col-md-8 {
+                padding-left: 0px;
+                padding-right: 18px;
+            }
+
+            .container-fluid .row .col-md-4 {
+                padding-left: 0px;
+                padding-right: 0px;
+            }
+
+            .content {
+                display: flex;
+                flex-direction: column;
+                background-color: rgb(255, 255, 255);
+                border-radius: 5px 5px 5px 5px;
+                box-shadow: 2px 3px rgba(157, 157, 157, 0.267);
+                height: fit-content;
+                padding: 10px 10px;
+                /* font-size: larger; */
+                margin-bottom: 1rem;
+            }
+
+            .prefer .card {
+                /* border: none; */
+                margin-bottom: 20px;
+                height: 100%;
+            }
+
+            .prefer .col-md-4 {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .prefer img {
+                align-self: center;
+                justify-self: center;
+                width: 100%;
+                border-radius: 5px;
+            }
+
+            .prefer h3 {
+                font-family: Gabriola;
+                /* font-size: large; */
+                font-weight: 600;
+            }
+
+            /* list styles */
+            .detail ol {
+                list-style: none;
+                color: #ccc;
+            }
+
+            .detail ol li {
+                font: bold 24pt helvetica, arial, sans-serif;
+                position: relative;
+                margin-bottom: 50px;
+            }
+
+            .detail li p {
+                font: 12pt helvetica, arial, sans-serif;
+                color: #555;
+                padding-left: 60px;
+            }
+
+            .detail span {
+                position: absolute;
+                line-height: 25px;
+            }
+
+            #nav h3 {
+                font-weight: 600;
+                font-family: 'Montserrat', Arial, sans-serif;
+                padding: 15px 0 0 15px;
+                text-align: left;
+            }
+
+            .nav-btn {
+                width: 130px;
+                height: 40px;
+                color: rgb(244, 237, 237);
+                border-radius: 5px;
+                padding: 10px 25px;
+                font-family: 'Lato', sans-serif;
+                font-weight: 500;
+                background: transparent;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                position: relative;
+                display: inline-block;
+                align-self: center;
+                box-shadow:inset 2px 2px 2px 0px rgba(255,255,255,.5),
+                7px 7px 20px 0px rgba(0,0,0,.1),
+                4px 4px 5px 0px rgba(0,0,0,.1);
+                outline: none;
+                background: rgb(247,150,192);
+                background: radial-gradient(circle, #3179ff 0%, #4385ff 100%);
+                /*#6a11cb 0%, #2575fc 100%  #a051f0 0%, #fc89e9 100%*/
+                line-height: 42px;
+                padding: 0;
+                border: none;
+                margin: 10px 10px;
+            }
+            .nav-btn span {
+                position: relative;
+                display: block;
+                /* width: 100%;
+                height: 100%; */
+            }
+            .nav-btn:before,
+            .nav-btn:after {
+                position: absolute;
+                content: "";
+                height: 0%;
+                width: 1px;
+                box-shadow:
+                -1px -1px 20px 0px rgba(255,255,255,1),
+                -4px -4px 5px 0px rgba(255,255,255,1),
+                7px 7px 20px 0px rgba(0,0,0,.4),
+                4px 4px 5px 0px rgba(0,0,0,.3);
+            }
+            .nav-btn:before {
+                right: 0;
+                top: 0;
+                transition: all 500ms ease;
+            }
+            .nav-btn:after {
+                left: 0;
+                bottom: 0;
+                transition: all 500ms ease;
+            }
+            .nav-btn:hover{
+                background: transparent;
+                color: #76aef1;
+                box-shadow: none;
+            }
+            .nav-btn:hover:before {
+                transition: all 500ms ease;
+                height: 100%;
+            }
+            .nav-btn:hover:after {
+                transition: all 500ms ease;
+                height: 100%;
+            }
+            .nav-btn span:before,
+            .nav-btn span:after {
+                position: absolute;
+                content: "";
+                box-shadow:
+                -1px -1px 20px 0px rgba(255,255,255,1),
+                -4px -4px 5px 0px rgba(255,255,255,1),
+                7px 7px 20px 0px rgba(0,0,0,.4),
+                4px 4px 5px 0px rgba(0,0,0,.3);
+            }
+            .nav-btn span:before {
+                left: 0;
+                top: 0;
+                width: 0%;
+                height: .5px;
+                transition: all 500ms ease;
+            }
+            .nav-btn span:after {
+                right: 0;
+                bottom: 0;
+                width: 0%;
+                height: .5px;
+                transition: all 500ms ease;
+            }
+            .nav-btn span:hover:before {
+                width: 100%;
+            }
+            .nav-btn span:hover:after {
+                width: 100%;
+            }
+
+            .my-comment {
+                font-family: 'Open Sans', Arial, sans-serif;
+                position: relative;
+                display: inline-block;
+                margin: 10px 10px 10px 0;
+                min-width: 230px;
+                width: 100%;
+                text-align: left;
+                line-height: 1.4em;
+                box-shadow: none !important;
+            }
+
+            .my-comment * {
+                -webkit-box-sizing: border-box;
+                box-sizing: border-box;
+            }
+
+            .my-comment .profile-image img {
+                border-radius: 5px;
+                max-width: 100%;
+                height: 80px;
+                vertical-align: top;
+                float: left;
+            }
+
+            .my-comment figcaption {
+                width: 100%;
+                background-color: rgb(255, 255, 255);
+                color: black;
+                padding: 25px;
+                display: inline-block;
+                margin-bottom: 15px;
+                border-radius: 5px;
+                position: relative;
+            }
+
+            .my-comment figcaption:after {
+                content: '';
+                position: absolute;
+                left: 32px;
+                top: 100%;
+                width: 0;
+                height: 0;
+                border-style: solid;
+                border-width: 10px 10px 0 10px;
+                border-color: #fff transparent transparent transparent;
+            }
+
+            .my-comment h3,
+            .my-comment h4,
+            .my-comment p {
+                margin: 0 0 5px;
+            }
+
+            .my-comment h3 {
+                font-weight: 600;
+                /* font-size: 1.2em; */
+                font-family: 'Montserrat', Arial, sans-serif;
+            }
+
+            .my-comment h5 {
+                color: #8c8c8c;
+                /* font-weight: 400; */
+                letter-spacing: 2px;
+            }
+
+            .my-comment p {
+                font-size: 1em;
+                letter-spacing: 1px;
+                opacity: 0.9;
+            }
+        </style>
+    </head>
+    <body>
+        <img class="mouse" src="./assets/cur.png" alt="">
+        <div class="intro-header">
+            <figure class="info-card">
+                <img src="./assets/portrait.jpg" alt="profile-img" />
+                <figcaption>
+                  <h4>Yusheng&nbspRen</h4>
+                  <!-- <div class="icons"><a href="#"><i class="ion-social-twitter"></i></a>
+                    <a href="#"> <i class="ion-social-instagram-outline"></i></a>
+                    <a href="#"> <i class="ion-social-github"></i></a>
+                  </div> -->
+                </figcaption>
+            </figure>
+        </div>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-9">
+                    <div class="content">
+                        <div class="jumbotron">
+                            <h1 class="display-4">Who Am I?</h1>
+                            <p class="lead">My name is Yusheng Ren. I'm an Year 2 UoA SCNU student and I'm studying computer science.</p>
+                            <p class="lead">This page is a brief introduction of my own interests of major and my skills in programming so far. You can also try my simple chat application in this website.</p>
+                            <hr class="my-4">
+                            <p>Visit my chat room by clicking the button.</p>
+                            <a class="btn btn-primary btn-lg" href="chat" role="button">Learn more</a>
+                        </div>
+                        <div class="detail">
+                            <h1 class="display-4">My Interests of Major</h1><HR>
+                            <p>I am interest in <mark>Android development</mark> and <mark>Machine Learning</mark>.</p>
+                            <p>I have finished <mark>Object-Oriented Programming</mark>, <mark>Computer Architecture</mark> as well as <mark>Introduction of Software Engineering</mark>.</p>
+                            <br>
+                            <h1 class="display-4">My Skills</h1><HR>
+                            <p>In my academic study, I have already got familiar with these programming language:</p>
+                            <ol>
+                                <li><span>01</span><p>Java</p></li>
+                                <li><span>02</span><p>Python</p></li>
+                                <li><span>03</span><p>Java Script</p></li>
+                                <li><span>04</span><p>HTML CSS</p></li>
+                                <li><span>04</span><p>Kotlin</p></li>
+                            </ol>
+                            <p>Besides, I can use several frames to create applications. For example, NodeJS, Express and Socket.io.</p>
+                            <p><em>you can see an example of a simple multi-user chatroom which is created by the 3 frames above.</em></p>
+                            <br>
+                            <h1 class="display-4">My Favourites</h1><HR>
+                            <div class="prefer">
+                                <div class="card" >
+                                    <div class="row no-gutters">
+                                        <div class="col-md-4">
+                                            <img class="card-img-top" src="./assets/Coldplay.jpg" alt="coldplay">
+                                        </div>
+                                        <div class="col-md-8">
+                                        <div class="card-body">
+                                            <h3 class="card-title">My favourite rock band is?</h3>
+                                            <p class="card-text"><em><strong>Coldplay</strong></em> are a British rock band formed in London in 1997. They consist of vocalist and pianist Chris Martin, guitarist Jonny Buckland, bassist Guy Berryman, drummer Will Champion and creative director Phil Harvey. The band's debut album, Parachutes (2000), included their breakthrough single "Yellow" and received a Brit Award for British Album of the Year, a Grammy Award for Best Alternative Music Album and a Mercury Prize nomination.</p>
+                                            <p class="card-text"><small class="text-muted">from wikipedia</small></p>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card" >
+                                    <div class="row no-gutters">
+                                        <div class="col-md-4">
+                                        <img class="card-img-top" src="./assets/RowanAtkinsonMar07.jpg" alt="RowanAtkinson" style="height: 200px; width: auto;">
+                                        </div>
+                                        <div class="col-md-8">
+                                        <div class="card-body">
+                                            <h3 class="card-title">My favourite actor is?</h3>
+                                            <p class="card-text"><em><strong>Rowan Atkinson</strong></em> (born 6 January 1955) is an English actor, comedian and writer. He played the title roles in the sitcoms Blackadder (1983–1989) and Mr. Bean (1990–1995), and in the film series Johnny English (2003–2018).</p>
+                                            <p class="card-text"><small class="text-muted">from wikipedia</small></p>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card" >
+                                    <div class="row no-gutters">
+                                        <div class="col-md-4" style="align-items: center;">
+                                        <img src="./assets/LoveDeathRobots_logo.png" alt="LoveDeathRobots_logo">
+                                        </div>
+                                        <div class="col-md-8">
+                                        <div class="card-body">
+                                            <h3 class="card-title">My favourite tv series is?</h3>
+                                            <p class="card-text"><em><strong>Love, Death & Robots</strong></em> is an adult animated anthology streaming television series created by Tim Miller and streaming on Netflix. The series is a re-imagining of Fincher and Miller's long in-development reboot of the 1981 animated science fiction film Heavy Metal, which was originally planned to follow the feature length format of the original film but one that could be better adapted for the new generation.</p>
+                                            <p class="card-text"><small class="text-muted">from wikipedia</small></p>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card">
+                                    <div class="row no-gutters">
+                                        <div class="col-md-4">
+                                        <img src="./assets/Violet_Evergarden_KV2.jpg" alt="Violet_Evergarden">
+                                        </div>
+                                        <div class="col-md-8">
+                                        <div class="card-body">
+                                            <h3 class="card-title">My favourite anime is?</h3>
+                                            <p class="card-text"><em><strong>Violet Evergarden</strong></em> is a Japan anime television series adaptation by Kyoto Animation. The story follows Violet Evergarden, a young ex-soldier whose recent employment at a postal company tasks her with writing letters that can connect people and her search for her life's purpose in order to understand the last words her mentor and guardian, Major Gilbert, had said to her.</p>
+                                            <p class="card-text"><small class="text-muted">from wikipedia</small></p>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="content" id="nav">
+                        <h3>Navigation</h3>
+                        <button class="nav-btn" id="1" onclick="window.location.href=('home')"><span>Home</span></button>
+                        <button class="nav-btn" id="2" onclick="window.location.href=('about')"><span>About</span></button>
+                        <button class="nav-btn" id="3" onclick="window.location.href=('chat')"><span>ChatRoom</span></button>
+                    </div>
+                    <figure class="my-comment">
+                        <figcaption>
+                            <h3>From</h3>
+                            <h5>Web Designer</h5>
+                            <p>I hope that you have a enjoyable time viewing my pages and I'll be grateful if you give high mark on my work.</p>
+                        </figcaption>
+                        <div class="profile-image">
+                            <img src="./assets/portrait.jpg" alt="profile-img" />
+                          <!-- <div class="icons"><a href="#"><i class="ion-social-reddit"></i></a>
+                            <a href="#"> <i class="ion-social-twitter"></i></a>
+                            <a href="#"> <i class="ion-social-vimeo"></i></a>
+                          </div> -->
+                        </div>
+                    </figure>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            var mouse = document.querySelector('.mouse');
+            window.addEventListener('mousemove',function(event){    
+                mouse.style.left = event.clientX - mouse.offsetWidth/2 +6 + 'px' ;
+                mouse.style.top = event.clientY -mouse.offsetHeight/2 +6 + 'px';       
+            })
+        </script>
+    </body>
+</html>

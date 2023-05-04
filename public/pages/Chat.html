@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="author" content="Yusheng Ren">
+        <title>Chat Room</title>
+        <!-- <link rel="stylesheet" href=""> -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+        <script src="https://cdn.bootcdn.net/ajax/libs/axios/1.3.6/axios.min.js"></script>
+        <script src="https://cdn.bootcdn.net/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
+        <style>
+            body {
+                background-color:azure;
+            }
+
+            .col-md-2, .col-md-10 {
+                border-right: 2px solid rgb(225, 225, 225);
+                background-color: rgb(255, 255, 255);
+                /* border-radius: 5px 5px 5px 5px; */
+                box-shadow: 2px 3px rgba(157, 157, 157, 0.267);
+                height: 100%;
+                padding: 10px 10px;
+                display: flex;
+                flex-direction: column;
+                /* align-items: stretch; */
+                /* align-content: stretch; */
+                /* flex-wrap: wrap; */
+            }
+
+            #author {
+                width: 100%;
+                background-image: linear-gradient(-225deg, #E3FDF5 0%, #FFE6FA 100%);
+            }
+
+            .portrait {
+                width: 60px;
+                height: 60px;
+                border-radius: 30px 30px 30px 30px;
+                float: right;
+            }
+
+            #create-container {
+                width: 100%;
+                border: 0px;
+            }
+
+            #user-list {
+                height: fit-content;
+                overflow-x: none;
+                overflow: auto;
+            }
+
+            #user-list button {
+                margin-bottom: 10px;
+                border-radius: 5px;
+                text-align: center;
+                line-height: 1em;
+            }
+
+            #chat-content-container {
+                width: 100%;
+                height: 100%;
+                overflow-y: scroll;
+                display: flex;
+                flex-direction: column;
+                flex: 1 1 auto;
+                flex-basis: 0;
+            }
+
+            .message{
+                margin-top: 16px;
+                /* margin-top: 1rem; */
+                white-space: pre;
+            }
+
+            .message #content {
+                padding: 10px 10px;
+                background-color: greenyellow;
+                border: 1px solid greenyellow;
+                border-radius: 5px 5px 5px 5px;
+                font-size: large;
+                display: inline-block;
+            }
+
+            .message #sys-msg {
+                background-color: lightgrey;
+                font-size: smaller;
+                border-radius: 20px 20px 20px 20px;
+                padding: 0 auto 0 auto;
+                padding-left: 10px;
+                padding-right: 10px;
+                width: fit-content;
+            }
+
+            .input-area {
+                width: 100%;
+                margin-top: 1rem;
+                padding-right: 10px;
+                align-self: flex-end;
+            }
+
+            .input-area #input {
+                max-height: 90vh;
+                overflow-y: scroll;
+            }
+
+            .input-area #describe {
+                position: absolute; 
+                right: 30px;
+                bottom: 0;
+                color: grey;
+                font-size: smaller;
+                user-select:none;
+            }
+
+            .chat {
+                width: 100%;
+                min-height: 3rem;
+                padding: 10px 10px;
+                border: 2px solid black;
+                border-radius: 5px;
+                word-wrap: break-word;
+                overflow-x: hidden;
+                overflow-y: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div class="row">
+                <!--User list-->
+                <div class="col-md-2" style="height: 100vh;">
+
+                    <div class="card" id="author">
+                        <div class="card-body">
+                            <img class="portrait" src="./assets/portrait.jpg"/>
+                            <h6 class="card-subtitle mb-2 text-muted">created by</h6>
+                            <h4 class="card-title" style="margin-bottom: 0;">Yusheng Ren</h5>
+                        </div>
+                    </div>
+                    <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=3)" width="80%" color=#987cb9 SIZE=3>
+
+                    <div class="card" id="create-container">
+                        <div class="input-group mb-3">
+                            <input 
+                                id="username"
+                                type="text" 
+                                class="form-control" 
+                                placeholder="UserName" 
+                                aria-label="username"
+                                style="width: 100%;"
+                                required>
+                        </div>
+                        <button type="button" class="btn btn-primary" id="login">Login</button>
+                    </div>
+                    <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=3)" width="80%" color=#987cb9 SIZE=3/>
+                    
+                    <!--user list-->
+                    <div class="list-group" id="user-list" style="height: 100%; overflow: auto;">
+                        <div class="card" style="text-align: center; background-color: #DBFDD7; margin-bottom: 8px;">Online Users</div>
+                        <!-- <button type="button" class="list-group-item list-group-item-action active" name="user" aria-current="true" onclick="switchUser(this.innerText)">
+                            user1
+                        </button>
+                        <button type="button" class="list-group-item list-group-item-action" name="user" onclick="switchUser(this.innerText)">user2</button> -->
+                    </div>
+                </div>
+
+                <!--Chat area-->
+                <div class="col-md-10" style="height: 100vh;background-color: whitesmoke;">
+                    <div class="container-fluid" id="chat-content-container">
+                        <div class="message" style="margin-left: auto; margin-right: auto;">
+                            <div id="sys-msg">welcome to chat room</div>
+                        </div>
+                    </div>
+                    <!--input area-->
+                    <div class="input-area">
+                        <div class="container-fluid">
+                            <div class="row" style="align-items: center;">
+                                <div class="col-11">
+                                    <span id="describe">press Enter to wrap</span>
+                                    <div class="chat" contenteditable="true" id="input"></div></div>
+                                <div class="col-1"><button type="button" class="btn btn-success" id="send">Send</button></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            const baseurl = "http://loaclhost:8888";
+            var socket, currentUser='', onlineUsers = [];
+
+            document.getElementById("login").addEventListener('click', () =>{
+                var username = document.getElementById('username').value;
+                // console.log(username)
+                changeUser(username);
+            });
+
+            // switch user or login
+            function changeUser(username){
+                if (null == socket){  // no user
+                    socket = io.connect('http://localhost:8888');
+                    socket.on('connect', () => {
+                        start(username);
+                    });
+                } else {
+                    start(username);
+                }
+                
+                // inner function that can update global variables and UI
+                function start(username){
+                    if(username != "" && username != currentUser){
+                        // excute login
+                        // axios.post('/login', { 
+                        //     name: username,
+                        //     socket: socket
+                        // }).catch(err => { console.log(err) });
+                        socket.emit('new user', username);
+                    }
+
+                    // handle feedback from server
+                    socket.on('online users', (res,data) => {
+                        if(res){
+                            currentUser = username;
+                            document.getElementById("login").disabled = true;
+                            appendSysMsg(data.slice(-1)+" enter the chat room")
+                        }
+                        onlineUsers = data;
+                        // console.log("login request complete")
+                        refreshUserList();
+                    });
+
+                    // user typing handler
+                    socket.on('typing', name =>{
+                        appendSysMsg(name+" is typing")
+                    });
+
+                    // new message handler
+                    socket.on('new message', data => {
+                        let chatContentContainer = document.getElementById('chat-content-container');
+                        if (data.user == currentUser){  // message from me
+                            chatContentContainer.innerHTML +=
+                            "<div class='message' style='margin-left: auto;text-align: right;'>"+
+                                "<div id='content'>"+data.msg+"</div>"+
+                                "<div id='time'>"+data.time+"</div>"+
+                            "</div>"
+                        } else {  // message from others
+                            chatContentContainer.innerHTML +=
+                            "<div class='message' style='margin-right: left;'>"+
+                                "<div id='from'>"+data.user+"</div>"+
+                                "<div id='content'>"+data.msg+"</div>"+
+                                "<div id='time'>"+data.time+"</div>"+
+                            "</div>"
+                        }
+                        chatContentContainer.scrollTop = chatContentContainer.scrollHeight
+                    });
+
+                    socket.on('user disconnected', (name,users) => {
+                        onlineUsers = users;
+                        appendSysMsg(name+" exit the chat room");
+                        refreshUserList();
+                    })
+                };
+            };
+
+            document.getElementById('send').addEventListener('click', e =>{
+                var message = document.getElementById('input').innerText;
+                if(null == socket){
+                    appendSysMsg("chat is unavailable before login");
+                } else {
+                    if(message != ""){
+                        socket.emit('public message', currentUser,message);
+                    }
+                    document.getElementById('input').innerText = "";
+                }
+            });
+
+            // monitor typing action
+            const myInput = document.getElementById('input');
+            const observer = new MutationObserver(mutations => {
+                // console.log('输入框内容已改变：' + myInput.innerText);
+                if(myInput.innerText != ""){
+                    socket.emit('typing', currentUser);
+                }
+            });
+
+            observer.observe(myInput, { childList: true, subtree: true });
+
+
+            // update UI - user list
+            function refreshUserList(){
+                var userList = document.getElementById("user-list");
+                userList.innerHTML = ""
+                userList.innerHTML += '<div class="card" style="text-align: center; background-color: #DBFDD7; margin-bottom: 8px;">Online Users</div>'
+                for(let i=0; i<onlineUsers.length; i++){
+                    var username = onlineUsers[i];
+                    var newUser = document.createElement("button");
+                    newUser.className = "list-group-item list-group-item-action";
+                    newUser.innerText = username;
+                    if(username == currentUser){  // message from current user
+                        newUser.className = "list-group-item list-group-item-action active";
+                        newUser.setAttribute('aria-current',"true");
+                    }
+                    userList.append(newUser)
+                }
+            };
+
+            // show messages from system on screen
+            function appendSysMsg(text){
+                let chatContentContainer = document.getElementById('chat-content-container');
+                chatContentContainer.innerHTML +=
+                    "<div class='message' style='margin-left: auto; margin-right: auto;'>"+
+                        "<div id='sys-msg'>"+text+"</div>"+
+                    "</div>";
+            };
+        </script>
+    </body>
+</html>

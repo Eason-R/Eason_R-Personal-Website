@@ -1,0 +1,255 @@
+<!DOCTYPE html lang=zh-CN>
+<html>
+    <head>
+        <script src="https://cdn.bootcdn.net/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
+    </head>
+    <body>
+        <script>
+            window.onload = function(){
+                appendSysMsg("welcome to chat room");
+                currentSocket = io('http://localhost:8888');
+                currentSocket.on('online users', data => {
+                    console.log("in onload")
+                    onlineUsers = data;
+                });
+                refreshUserList();
+            }
+
+            // login handler
+            document.getElementById("login").addEventListener('click', () =>{
+                var username = document.getElementById('username').value;
+                document.getElementById("login").setAttribute('readonly',true);
+                changeUser(username);
+            });
+
+            // send public message handler
+            document.getElementById('send').addEventListener('click', e =>{
+                var message = document.getElementById('message').innerText;
+                if(null == currentSocket){
+                    appendSysMsg("chat is unavailable before login");
+                } else {
+                    currentSocket.emit('public message', currentUser,message);
+                }
+
+                // new message handler
+                currentSocket.on('new message', data => {
+                    messageList.push(data)
+                    let chatContentContainer = document.getElementById('chat-content-container');
+                    if (data.user == currentUser){  // message from me
+                        chatContentContainer.innerHTML +=
+                        "<div class='message' style='margin-left: auto;text-align: right;'>"+
+                            "<div id='content'>"+data.msg+"</div>"+
+                            "<div id='time'>"+data.time+"</div>"+
+                        "</div>"
+                    } else {  // message from others
+                        chatContentContainer.innerHTML +=
+                        "<div class='message' style='margin-right: auto;'>"+
+                            "<div id='from'>"+data.user+"</div>"+
+                            "<div id='content'>"+data.msg+"</div>"+
+                            "<div id='time'>"+data.time+"</div>"+
+                        "</div>"
+                    }
+                });
+            });
+
+            // event listener of user list elements
+            // document.getElementById("user-list").addEventListener('click', event => {
+            //     console.log("click an online user");
+            //     const target = event.target;
+            //     console.log(target.tagName.toLowerCase());
+            //     if (target.tagName.toLowerCase() == "button"){
+            //         console.log("start switch user")
+            //         // changeUser(target.innerText)
+            //     }
+            // })
+
+            // switch user or login
+            function changeUser(username){
+                if (null == currentSocket){  // no user
+                    currentSocket = io.connect('http://localhost:8888');
+                    currentSocket.on('connect', () => {
+                        updateUser(username);
+                    });
+                } else {
+                    console.log("start login")
+                    updateUser(username);
+                }
+
+                // inner function that can update global variables and UI
+                function updateUser(username){
+                    if(username != "" && username != currentUser){
+                        console.log("excute login")
+                        currentSocket.emit('new user', username);    // excute login
+                    }
+
+                    // handle feedback from server
+                    currentSocket.on('online users', (socket,data) => {
+                        console.log("in updateUser")
+                        if(data.length > onlineUsers.length){
+                            appendSysMsg(data.slice(-1)+"enter the chat room")
+                        }
+                        onlineUsers = data;
+                        currentUser = username;
+                        currentSocket = socket;
+                        console.log("login request complete")
+                        refreshUserList();
+                        // refreshMsg();
+                    });
+                };
+            };
+
+            // show messages from system on screen
+            function appendSysMsg(text){
+                let chatContentContainer = document.getElementById('chat-content-container');
+                chatContentContainer.innerHTML +=
+                    "<div class='message' style='margin-left: auto; margin-right: auto;'>"+
+                        "<div id='sys-msg'>"+text+"</div>"+
+                    "</div>";
+            };
+
+            // update UI - user list
+            function refreshUserList(){
+                var userList = document.getElementById("user-list");
+                userList.innerHTML = ""
+                for(let i=0; i<onlineUsers.length; i++){
+                    var username = onlineUsers[i];
+                    var newUser = document.createElement("button");
+                    newUser.className = "list-group-item list-group-item-action";
+                    newUser.innerText = username;
+                    if(username == currentUser){  // message from current user
+                        newUser.className = "list-group-item list-group-item-action active";
+                        newUser.setAttribute('aria-current',"true");
+                    }
+                    userList.append(newUser)
+                }
+            };
+
+            // update UI - message area
+            function refreshMsg(){
+                let chatContentContainer = document.getElementById('chat-content-container');
+                chatContentContainer.innerHTML = "";
+                for(msg in messageList){
+                    if (msg.user == currentUser){  // message from me
+                        chatContentContainer.innerHTML +=
+                        "<div class='message' style='margin-left: auto;text-align: right;'>"+
+                            "<div id='content'>"+msg.msg+"</div>"+
+                            "<div id='time'>"+msg.time+"</div>"+
+                        "</div>"
+                    } else {  // message from others
+                        chatContentContainer.innerHTML +=
+                        "<div class='message' style='margin-right: auto;'>"+
+                            "<div id='from'>"+msg.user+"</div>"+
+                            "<div id='content'>"+msg.msg+"</div>"+
+                            "<div id='time'>"+msg.time+"</div>"+
+                        "</div>"
+                    }
+                }
+            };
+        </script>
+
+        <script>
+            // server code
+            io.on('connection',function(socket){
+    io.emit('online users', onlineUsers);
+
+    socket.on('new user', (name) => {
+        console.log("receive login request")
+        if(!(name in onlineUsers)){
+            console.log("new user")
+            users[name] = socket  // save new user as private socket  key{name}=value{socket}
+            onlineUsers.push(name)  // save username to online user list
+            io.emit('online users', onlineUsers)// brocast online user list
+        } else {
+            console.log("old user")
+            io.emit('online users', onlineUsers)// brocast online user list
+        }
+    });
+
+    // monitor private message
+    socket.on('private message', (from,to,msg) => {
+        if(to in users){ 
+            users[to].emit('to'+to, {msg,from,to}); 
+        }
+    });
+
+    // monitor public message
+    socket.on('public message', (from,msg) => {
+        let time = new Date();
+        let message = {
+            user: from,
+            msg: msg,
+            time: time.toLocaleString()
+        }
+        io.emit('new message', message)
+    })
+
+    // monitor user exit
+    socket.on('disconnect', () => {
+        let logoutUserName;
+        // traverse all users to find if the user disconnected is online
+        for(let obj in users){
+            // if is, tell the user that he is disconnected, then delete it from users
+            if(users[obj] == socket){
+                logoutUserName = obj;
+                delete users[obj];
+            }
+        }
+        // traverse again to judge if the user is still online
+        for(let i in onlineUsers){
+            // if is, remove the user
+            if(onlineUsers[i] == logoutUserName){
+                onlineUsers.splice(i,1);
+            }
+        }
+
+        io.emit('online users',onlineUsers);
+        io.emit('user disconnected',logoutUserName);
+    });
+})
+        </script>
+
+        <script>
+            /**
+ * login
+ * @param {String} name username
+ */
+router.post('/login', (req,res) =>{
+    try{
+        let newuser = req.body.name;
+        if(!(newuser in onlineUsers)){
+            onlineUsers.push(newuser)
+        }
+        res.send(onlineUsers);
+    }catch(err){
+        console.log(err)
+    }
+});
+
+/**
+ * send public message
+ * @param {String} user username
+ * @param {String} content
+ * @param {Date} time generate automatically
+ */
+router.post('/public-msg',(req,res) =>{
+    try{
+        let message = {
+            user: req.body.user,
+            content: req.body.content,
+            time: new Date()
+        };
+        res.send(message)
+    }catch(err){
+        console.log(err)
+    }
+});
+
+router.post('/private-msg',(req,res) => {
+    res.send()
+});
+
+router.post()
+app.use('/api',router);
+        </script>
+    </body>
+</html>
