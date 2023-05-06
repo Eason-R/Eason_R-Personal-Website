@@ -4,7 +4,6 @@
         <meta charset="UTF-8">
         <meta name="author" content="Yusheng Ren">
         <title>Chat Room</title>
-        <!-- <link rel="stylesheet" href=""> -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
         <script src="https://cdn.bootcdn.net/ajax/libs/axios/1.3.6/axios.min.js"></script>
         <script src="https://cdn.bootcdn.net/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
@@ -16,15 +15,11 @@
             .col-md-2, .col-md-10 {
                 border-right: 2px solid rgb(225, 225, 225);
                 background-color: rgb(255, 255, 255);
-                /* border-radius: 5px 5px 5px 5px; */
                 box-shadow: 2px 3px rgba(157, 157, 157, 0.267);
                 height: 100%;
                 padding: 10px 10px;
                 display: flex;
                 flex-direction: column;
-                /* align-items: stretch; */
-                /* align-content: stretch; */
-                /* flex-wrap: wrap; */
             }
 
             #author {
@@ -160,8 +155,7 @@
                         <div class="card" style="text-align: center; background-color: #DBFDD7; margin-bottom: 8px;">Online Users</div>
                         <!-- <button type="button" class="list-group-item list-group-item-action active" name="user" aria-current="true" onclick="switchUser(this.innerText)">
                             user1
-                        </button>
-                        <button type="button" class="list-group-item list-group-item-action" name="user" onclick="switchUser(this.innerText)">user2</button> -->
+                        </button> -->
                     </div>
                 </div>
 
@@ -189,7 +183,7 @@
         </div>
 
         <script type="text/javascript">
-            const baseurl = "http://loaclhost:8888";
+            const baseurl = "http://loaclhost:3000";
             var socket, currentUser='', onlineUsers = [];
 
             document.getElementById("login").addEventListener('click', () =>{
@@ -212,11 +206,6 @@
                 // inner function that can update global variables and UI
                 function start(username){
                     if(username != "" && username != currentUser){
-                        // excute login
-                        // axios.post('/login', { 
-                        //     name: username,
-                        //     socket: socket
-                        // }).catch(err => { console.log(err) });
                         socket.emit('new user', username);
                     }
 
@@ -228,7 +217,6 @@
                             appendSysMsg(data.slice(-1)+" enter the chat room")
                         }
                         onlineUsers = data;
-                        // console.log("login request complete")
                         refreshUserList();
                     });
 
@@ -257,6 +245,7 @@
                         chatContentContainer.scrollTop = chatContentContainer.scrollHeight
                     });
 
+                    // user exit handler
                     socket.on('user disconnected', (name,users) => {
                         onlineUsers = users;
                         appendSysMsg(name+" exit the chat room");
@@ -265,6 +254,7 @@
                 };
             };
 
+            // event of user send message
             document.getElementById('send').addEventListener('click', e =>{
                 var message = document.getElementById('input').innerText;
                 if(null == socket){
@@ -277,15 +267,13 @@
                 }
             });
 
-            // monitor typing action
+            // monitor user typing action
             const myInput = document.getElementById('input');
             const observer = new MutationObserver(mutations => {
-                // console.log('输入框内容已改变：' + myInput.innerText);
                 if(myInput.innerText != ""){
                     socket.emit('typing', currentUser);
                 }
             });
-
             observer.observe(myInput, { childList: true, subtree: true });
 
 

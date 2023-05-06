@@ -1,4 +1,3 @@
-// 导入 express 模块 
 const express = require('express');
 // create express server instance 
 const app = express();
@@ -39,7 +38,7 @@ app.get("/chat", (req,res) => {
 })
 
 
-// request handler
+// request handlers
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 let users = {};
@@ -48,7 +47,6 @@ let onlineUsers = [];
 io.on('connection',function(socket){
 
     socket.on('new user', (name) => {
-        // console.log("receive login request"
         let isnew = false;
         if(!(onlineUsers.includes(name))){
             isnew = !isnew
@@ -59,7 +57,7 @@ io.on('connection',function(socket){
         io.emit('online users', isnew,onlineUsers)// brocast online user list
     });
 
-    // monitor private message
+    // monitor private message - unuse for now
     socket.on('private message', (from,to,msg) => {
         if(to in users){ 
             users[to].emit('to'+to, {msg,from,to}); 
@@ -72,7 +70,7 @@ io.on('connection',function(socket){
         let message = {
             user: from,
             msg: msg,
-            time: time.toLocaleString()
+            time: time.toLocaleString()  // show time
         }
         io.emit('new message', message)
     });
@@ -85,6 +83,7 @@ io.on('connection',function(socket){
     // monitor user exit
     socket.on('disconnect', () => {
         let logoutUserName=Object.keys(users).find(key=>users[key]==socket);
+        // delete user
         if(logoutUserName != undefined){
             delete users[logoutUserName];
         }
@@ -111,9 +110,4 @@ app.use("/",router);
 http.listen(3000,() => {
     console.log('server is running at port 3000') 
 });
-
-// 调用 app.listen 方法，指定端口号并启动web服务器 
-// app.listen(8888, function () {   
-//     console.log('server is running at http://127.0.0.1:8888') 
-// })
 
