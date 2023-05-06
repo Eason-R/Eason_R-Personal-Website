@@ -14,8 +14,9 @@ app.use(express.static(__dirname + "/public"));
 
 // HelloWorld
 app.get('/', (req, res) => {
-    res.send('Hello World!');
-    console.log(__dirname)
+    // res.send('Hello World!');
+    // console.log(__dirname)
+    res.redirect('/home')
 });
 
 // Intro Page

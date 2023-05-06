@@ -201,7 +201,7 @@
             // switch user or login
             function changeUser(username){
                 if (null == socket){  // no user
-                    socket = io.connect('http://127.0.0.1:3000');
+                    socket = io();
                     socket.on('connect', () => {
                         start(username);
                     });
