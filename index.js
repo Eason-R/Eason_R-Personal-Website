@@ -107,8 +107,8 @@ router.post("/login", (req,res)=>{
 app.use("/",router);
 
 // listen backend port
-http.listen(8888,() => {
-    console.log('server is running at http://127.0.0.1:8888') 
+http.listen(3000,() => {
+    console.log('server is running at port 3000') 
 });
 
 // 调用 app.listen 方法，指定端口号并启动web服务器 
